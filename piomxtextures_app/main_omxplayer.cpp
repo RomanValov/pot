@@ -470,7 +470,7 @@ int main(int argc, char *argv[])
   m_bMpeg         = m_omx_reader.IsMpegVideo();
   m_has_video     = m_omx_reader.VideoStreamCount();
   m_has_audio     = m_omx_reader.AudioStreamCount();
-  m_has_subtitle  = m_omx_reader.SubtitleStreamCount();
+  m_has_subtitle  = false && m_omx_reader.SubtitleStreamCount();
 
   if(!m_av_clock->OMXInitialize(m_has_video, m_has_audio))
     goto do_exit;

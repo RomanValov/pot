@@ -202,7 +202,7 @@ SOURCES += $$SRC/omx_omxplayer_logging.cpp
 SOURCES += \
     $$SRC/omxplayer_lib/Srt.cpp \
     $$SRC/omxplayer_lib/Unicode.cpp \
-    $$SRC/omxplayer_lib/SubtitleRenderer.cpp \
+#    $$SRC/omxplayer_lib/SubtitleRenderer.cpp \
     $$SRC/omxplayer_lib/OMXVideo.cpp \
     $$SRC/omxplayer_lib/OMXThread.cpp \
     $$SRC/omxplayer_lib/OMXSubtitleTagSami.cpp \
@@ -270,7 +270,7 @@ HEADERS  += \
 
 HEADERS += \
     $$SRC/omxplayer_lib/Unicode.h \
-    $$SRC/omxplayer_lib/SubtitleRenderer.h \
+#    $$SRC/omxplayer_lib/SubtitleRenderer.h \
     $$SRC/omxplayer_lib/OMXVideo.h \
     $$SRC/omxplayer_lib/OMXThread.h \
     $$SRC/omxplayer_lib/OMXStreamInfo.h \

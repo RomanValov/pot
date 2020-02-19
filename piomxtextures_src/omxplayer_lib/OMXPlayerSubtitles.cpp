@@ -152,6 +152,7 @@ RenderLoop(const string& font_path,
            unsigned int lines,
            OMXClock* clock)
 {
+/*
   SubtitleRenderer renderer(m_display, m_layer,
                             font_path,
                             italic_font_path,
@@ -161,7 +162,7 @@ RenderLoop(const string& font_path,
                             0xDD,
                             ghost_box ? 0x80 : 0,
                             lines);
-
+*/
   vector<Subtitle> subtitles;
 
   int prev_now{};
@@ -186,7 +187,7 @@ RenderLoop(const string& font_path,
     {
       if(subtitles[next_index].stop > time)
       {
-        renderer.prepare(subtitles[next_index].text_lines);
+        //renderer.prepare(subtitles[next_index].text_lines);
         have_next = true;
         break;
       }
@@ -195,7 +196,7 @@ RenderLoop(const string& font_path,
 
   auto Reset = [&](int time)
   {
-    renderer.unprepare();
+    //renderer.unprepare();
     current_stop = INT_MIN;
 
     auto it = FindSubtitle(subtitles.begin(),
@@ -205,7 +206,7 @@ RenderLoop(const string& font_path,
 
     if(next_index != subtitles.size())
     {
-      renderer.prepare(subtitles[next_index].text_lines);
+      //renderer.prepare(subtitles[next_index].text_lines);
       have_next = true;
     }
     else
@@ -268,8 +269,8 @@ RenderLoop(const string& font_path,
       },
       [&](Message::DisplayText&& args)
       {
-        renderer.prepare(args.text_lines);
-        renderer.show_next();
+        //renderer.prepare(args.text_lines);
+        //renderer.show_next();
         showing = true;
         osd = true;
         osd_stop = chrono::steady_clock::now() +
@@ -299,7 +300,7 @@ RenderLoop(const string& font_path,
     {
       if(have_next && subtitles[next_index].start <= now)
       {
-        renderer.show_next();
+        //renderer.show_next();
         // printf("show error: %i ms\n", now - subtitles[next_index].start);
         showing = true;
         current_stop = subtitles[next_index].stop;
@@ -310,7 +311,7 @@ RenderLoop(const string& font_path,
       }
       else if(showing)
       {
-        renderer.hide();
+        //renderer.hide();
         // printf("hide error: %i ms\n", now - current_stop);
         showing = false;
       }
