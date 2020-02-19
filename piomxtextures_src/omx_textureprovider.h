@@ -250,13 +250,16 @@ bool OMX_EGLBufferProvider::init()
       return false;
 
    // Get global EGL context config.
+   log_verbose("Get configs...");
    const int MAX_CONFIG = 100;
    EGLConfig configs[MAX_CONFIG];
    int confCount;
    EGLBoolean success = eglGetConfigs(m_eglDisplay, configs, 100, &confCount);
+   log_verbose("Get configs!!!");
    if (success != EGL_TRUE)
       return log_err("Failed to get EGL configs: %u.", success);
 
+   log_info("Querying context...");
    EGLint eglVal;
    success = eglQueryContext(m_eglDisplay, eglGlobalContext, EGL_CONFIG_ID, &eglVal);
    if (success != EGL_TRUE)
