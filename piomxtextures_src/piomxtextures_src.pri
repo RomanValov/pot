@@ -59,7 +59,10 @@ linux-rasp-pi4-g++|linux-rasp-pi4-v3d-g++ {
    FFMPEG_BUILD_DIR = ffmpeg_pi4
 }
 
-LIBS += -lopenmaxil -lEGL -lbcm_host -lvchiq_arm -lvcos -lGLESv2 -lrt -lv4l2
+INCLUDEPATH += /opt/rpi/sysroot/opt/vc/include/
+LIBS += -L/opt/rpi/sysroot/opt/vc/lib/
+
+LIBS += -lopenmaxil -lbrcmEGL -lbcm_host -lvchiq_arm -lvcos -lbrcmGLESv2 -lrt -lv4l2
 INCLUDEPATH += $$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/include
 #LIBS += -lavformat -lavcodec -lavutil
 # Internal
@@ -77,9 +80,6 @@ else {
 LIBS += -L$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib \
    -lavformat -lavcodec -lavutil -lswscale -lswresample -lpcre
 }
-
-INCLUDEPATH += /opt/rpi/sysroot/opt/vc/include/
-LIBS += -L/opt/rpi/sysroot/opt/vc/lib/
 
 # For omxplayer.
 #LIBS += -lfreetype -lWFC -lpcre
@@ -131,7 +131,7 @@ DEFINES += ENABLE_IMPROVED_BUFFERING
 #DEFINES += ENABLE_PAUSE_FOR_BUFFERING
 
 # This enables logs coming from omxplayer core.
-#DEFINES += ENABLE_OMXPLAYER_LOGS
+DEFINES += ENABLE_OMXPLAYER_LOGS
 
 # Define this to enable watchdog.
 DEFINES += OMX_LOCK_WATCHDOG
