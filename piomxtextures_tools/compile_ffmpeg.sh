@@ -15,6 +15,8 @@
 # pi2: build for armv7-a
 # pi3: build for armv8-a
 
+set -eux
+
 function check_exists_dir {
    if [ ! -d $1 ]; then
       echo "$1 does not exist."
@@ -34,19 +36,22 @@ export PATH="$RPI_COMPILER_PATH":$PATH
 # Set CFLAGS.
 if [ "$1" == "pi1" ]; then
 	FFMPEG_ARCH=arm
-	ECFLAGS="-marm -mfpu=vfp -mfloat-abi=hard -mtune=arm1176jzf-s -march=armv6zk -mno-apcs-stack-check -mstructure-size-boundary=32 -mno-sched-prolog"
+	ECFLAGS="-marm -mfpu=vfp -mfloat-abi=hard -mtune=arm1176jzf-s -march=armv6zk"
 elif [ "$1" == "pi2" ]; then
 	FFMPEG_ARCH=armv7-a
 	ECFLAGS="-march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard \
-		-funsafe-math-optimizations -lm -mno-apcs-stack-check -mstructure-size-boundary=32 -mno-sched-prolog"
+		-funsafe-math-optimizations -lm"
 elif [ "$1" == "pi3" ]; then
 	FFMPEG_ARCH=armv8-a
-	SMBCLIENT=`pkg-config smbclient --cflags --libs`
-	SSH="-Wl,-rpath,$RPI_SYSROOT/usr/lib/arm-linux-gnueabihf -Wl,-rpath,$RPI_SYSROOT/lib/arm-linux-gnueabihf"
 	ECFLAGS="-march=armv8-a -mtune=cortex-a53 -mfpu=crypto-neon-fp-armv8 -mfloat-abi=hard \
-		-funsafe-math-optimizations -lm -mno-apcs-stack-check -mstructure-size-boundary=32 -mno-sched-prolog $SSH $SMBCLIENT"
+		-funsafe-math-optimizations -lm"
 	ELDFLAGS="-Wl,-rpath-link,$RPI_SYSROOT/usr/lib/arm-linux-gnueabihf \
-		-Wl,-rpath-link,$RPI_SYSROOT/usr/lib/arm-linux-gnueabihf/samba \
+		-Wl,-rpath-link,$RPI_SYSROOT/lib/arm-linux-gnueabihf"
+elif [ "$1" == "pi4" ]; then
+	FFMPEG_ARCH=armv8-a
+	ECFLAGS="-march=armv8-a -mtune=cortex-a72 -mfpu=crypto-neon-fp-armv8 -mfloat-abi=hard \
+		-funsafe-math-optimizations -lm"
+	ELDFLAGS="-Wl,-rpath-link,$RPI_SYSROOT/usr/lib/arm-linux-gnueabihf \
 		-Wl,-rpath-link,$RPI_SYSROOT/lib/arm-linux-gnueabihf"
 else
 	echo "Please choose either pi1 or pi2."
@@ -62,14 +67,14 @@ if [ "$TEST" == "false" ]; then
    exit
 fi
 
-TEST="${COMPILER_PATH:=false}"
+TEST="${RPI_COMPILER_PATH:=false}"
 if [ "$TEST" == "false" ]; then
 	echo "Please set COMPILER_PATH (location of arm-linux-gnueabihf-gcc)."
    exit
 fi
 
 check_exists_dir "$RPI_SYSROOT"
-check_exists_dir "$COMPILER_PATH"
+check_exists_dir "$RPI_COMPILER_PATH"
 
 echo "Downloading ffmpeg sources from git..."
 cd ..
@@ -84,18 +89,6 @@ cd ffmpeg_src
 
 echo "Configuring..."
 echo "Prefix to $PWD..."
-if [ "$2" == "generic" ]; then
-	./configure --sysroot=$RPI_SYSROOT \
-		--extra-cflags="$ECFLAGS" \
-		--enable-cross-compile \
-		--enable-shared \
-		--enable-static \
-		--arch=$FFMPEG_ARCH \
-		--target-os=linux \
-		--enable-nonfree \
-		--enable-gpl
-	exit
-fi
 if [ "$1" == "pi1" ]; then
 ./configure \
 --sysroot=$RPI_SYSROOT \
@@ -119,8 +112,8 @@ if [ "$1" == "pi1" ]; then
 --enable-gpl \
 --enable-version3 \
 --enable-protocols \
---enable-libsmbclient \
---enable-libssh \
+--disable-libsmbclient \
+--disable-libssh \
 --enable-nonfree \
 --enable-openssl \
 --enable-pthreads \
@@ -345,8 +338,8 @@ else
 --enable-gpl \
 --enable-version3 \
 --enable-protocols \
---enable-libsmbclient \
---enable-libssh \
+--disable-libsmbclient \
+--disable-libssh \
 --enable-nonfree \
 --enable-openssl \
 --enable-pthreads \
