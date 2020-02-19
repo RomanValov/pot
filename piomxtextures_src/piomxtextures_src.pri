@@ -62,7 +62,7 @@ linux-rasp-pi4-g++|linux-rasp-pi4-v3d-g++ {
 INCLUDEPATH += /opt/rpi/sysroot/opt/vc/include/
 LIBS += -L/opt/rpi/sysroot/opt/vc/lib/
 
-LIBS += -lopenmaxil -lbrcmEGL -lbcm_host -lvchiq_arm -lvcos -lbrcmGLESv2 -lrt -lv4l2
+LIBS += -lopenmaxil -lEGL -lbcm_host -lvchiq_arm -lvcos -lGLESv2 -lrt -lv4l2
 INCLUDEPATH += $$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/include
 #LIBS += -lavformat -lavcodec -lavutil
 # Internal
