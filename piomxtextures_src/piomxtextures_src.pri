@@ -54,7 +54,12 @@ linux-rpi3-g++|linux-rasp-pi3-g++ {
    FFMPEG_BUILD_DIR = ffmpeg_pi3
 }
 
-LIBS += -lopenmaxil -lbrcmEGL -lbcm_host -lvchiq_arm -lvcos -lbrcmGLESv2 -lrt -lv4l2
+linux-rasp-pi4-g++|linux-rasp-pi4-v3d-g++ {
+   message("Building for RPi4...");
+   FFMPEG_BUILD_DIR = ffmpeg_pi4
+}
+
+LIBS += -lopenmaxil -lEGL -lbcm_host -lvchiq_arm -lvcos -lGLESv2 -lrt -lv4l2
 INCLUDEPATH += $$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/include
 #LIBS += -lavformat -lavcodec -lavutil
 # Internal
@@ -72,6 +77,9 @@ else {
 LIBS += -L$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib \
    -lavformat -lavcodec -lavutil -lswscale -lswresample -lpcre
 }
+
+INCLUDEPATH += /opt/rpi/sysroot/opt/vc/include/
+LIBS += -L/opt/rpi/sysroot/opt/vc/lib/
 
 # For omxplayer.
 #LIBS += -lfreetype -lWFC -lpcre
