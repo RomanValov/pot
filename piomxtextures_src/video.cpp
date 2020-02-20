@@ -45,7 +45,8 @@ extern "C" {
 #include "OMXCore.h"
 #include "omxtunnel.h"
 
-#define EGL_EGLEXT_PROTOTYPES
+//#define EGL_EGLEXT_PROTOTYPES
+#include <gbm.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
@@ -76,7 +77,7 @@ void my_fill_buffer_done(void* data, COMPONENT_T* comp)
     OMX_FillThisBuffer(ilclient_get_handle(video_render), eglBuffer);
 }
 
-int video_decode_test(QString qfilename, EGLImageKHR eglImageVideo, EGLDisplay eglDisplayVideo)
+int video_decode_test(QString qfilename, EGLImage eglImageVideo, EGLDisplay eglDisplayVideo)
 {
     QString runtimeErrorDesc;
     OMX_VIDEO_PARAM_PORTFORMATTYPE format;

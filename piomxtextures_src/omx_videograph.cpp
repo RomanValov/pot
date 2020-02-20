@@ -22,6 +22,7 @@
  */
 
 #include <IL/OMX_Broadcom.h>
+#include <gbm.h>
 #include <EGL/egl.h>
 
 #include "omx_videograph.h"

@@ -18,7 +18,7 @@
 
 #include "OMXPlayerSubtitles.h"
 #include "OMXOverlayText.h"
-#include "SubtitleRenderer.h"
+//#include "SubtitleRenderer.h"
 #include "utils/Enforce.h"
 #include "utils/ScopeExit.h"
 #include "utils/Clamp.h"

@@ -140,9 +140,9 @@ void OMX_TextureData::freeData()
 
    // Destroy texture, EGL image and free the buffer.
    if (m_eglImage) {
-      log_verbose("Freeing KHR image %p...", m_eglImage);
-      if (eglDestroyImageKHR(eglDisplay, m_eglImage) != EGL_TRUE) {
-         LOG_ERROR(LOG_TAG, "Failed to destroy EGLImageKHR: %s.", get_egl_errstr());
+      log_verbose("Freeing EGL image %p...", m_eglImage);
+      if (eglDestroyImage(eglDisplay, m_eglImage) != EGL_TRUE) {
+         LOG_ERROR(LOG_TAG, "Failed to destroy EGLImage: %s.", get_egl_errstr());
       }
 
       m_eglImage = NULL;

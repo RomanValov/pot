@@ -33,7 +33,8 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-#define EGL_EGLEXT_PROTOTYPES
+//#define EGL_EGLEXT_PROTOTYPES
+#include <gbm.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
@@ -63,7 +64,7 @@ public:
         resetTexture();
     }
 
-    inline void setTexture(EGLImageKHR eglImage, uint textureId, QSize textureSize) {
+    inline void setTexture(EGLImage eglImage, uint textureId, QSize textureSize) {
         resetTexture();
         m_eglImage    = eglImage;
         m_textureId   = textureId;
@@ -75,7 +76,7 @@ public:
             assert(m_eglImage);
             assert(m_eglDisplay);
             glDeleteTextures(1, &m_textureId);
-            eglDestroyImageKHR(m_eglDisplay, m_eglImage);
+            eglDestroyImage(m_eglDisplay, m_eglImage);
         }
         m_textureId   = 0;
         m_textureSize = QSize();
@@ -89,7 +90,7 @@ public:
         return m_textureSize;
     }
 
-    inline EGLImageKHR eglImage() const {
+    inline EGLImage eglImage() const {
         return m_eglImage;
     }
 
@@ -104,7 +105,7 @@ public:
 protected:
     uint  m_textureId;
     QSize m_textureSize;
-    EGLImageKHR m_eglImage;
+    EGLImage m_eglImage;
     EGLDisplay m_eglDisplay;
 };
 

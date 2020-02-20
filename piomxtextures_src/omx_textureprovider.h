@@ -37,7 +37,8 @@
 
 #include <IL/OMX_Video.h>
 #include <GLES2/gl2.h>
-#define EGL_EGLEXT_PROTOTYPES
+//#define EGL_EGLEXT_PROTOTYPES
+#include <gbm.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
@@ -72,7 +73,7 @@ public:
 
    GLuint      m_textureId;
    GLubyte*    m_textureData;
-   EGLImageKHR m_eglImage;
+   EGLImage    m_eglImage;
    QSize       m_textureSize;
    OMX_BUFFERHEADERTYPE* m_omxBuffer;
 
@@ -246,8 +247,10 @@ bool OMX_EGLBufferProvider::init()
 	}
 
    EGLContext eglGlobalContext = get_global_egl_context();
-   if (!eglGlobalContext)
+   if (!eglGlobalContext) {
+      log_err("Failed to get global EGL context. Please enable it with the proper attr.");
       return false;
+   }
 
    // Get global EGL context config.
    log_verbose("Get configs...");
@@ -255,9 +258,9 @@ bool OMX_EGLBufferProvider::init()
    EGLConfig configs[MAX_CONFIG];
    int confCount;
    EGLBoolean success = eglGetConfigs(m_eglDisplay, configs, 100, &confCount);
-   log_verbose("Get configs!!!");
    if (success != EGL_TRUE)
       return log_err("Failed to get EGL configs: %u.", success);
+   log_verbose("Got configs %u.", confCount);
 
    log_info("Querying context...");
    EGLint eglVal;
@@ -273,17 +276,58 @@ bool OMX_EGLBufferProvider::init()
    if (!eglConfig)
       return log_err("Failed to get EGL config.");
 
+   if (eglGetConfigAttrib(m_eglDisplay, eglConfig, EGL_SURFACE_TYPE, &eglVal) == EGL_FALSE)
+      return log_err("Failed to get EGL config attrib.");
+
+   log_debug("Global EGL context config surface type: %hu.", eglVal);
+
+//   EGLint pi32ConfigAttribs[3];
+//   pi32ConfigAttribs[0] = EGL_SURFACE_TYPE;
+//   pi32ConfigAttribs[1] = EGL_PIXMAP_BIT;
+//   pi32ConfigAttribs[2] = EGL_RENDERABLE_TYPE;
+//   pi32ConfigAttribs[3] = EGL_OPENGL_ES2_BIT;
+//   pi32ConfigAttribs[4] = EGL_CONFORMANT;
+//   pi32ConfigAttribs[5] = EGL_OPENGL_ES2_BIT;
+//   pi32ConfigAttribs[6] = EGL_COLOR_BUFFER_TYPE;
+//   pi32ConfigAttribs[7] = EGL_RGB_BUFFER;
+//   pi32ConfigAttribs[2] = EGL_NONE;
+
+//   if (eglChooseConfig(m_eglDisplay, pi32ConfigAttribs, configs, MAX_CONFIG, &confCount) == EGL_FALSE)
+//      return log_err("Failed to choose surface configs: %hu.", eglGetError());
+//   log_verbose("Got configs %u.", confCount);
+
+   /*
+   pi32ConfigAttribs[8] = EGL_LUMINANCE_SIZE;
+   pi32ConfigAttribs[9] = 0;
+   pi32ConfigAttribs[10] = EGL_RED_SIZE;
+   pi32ConfigAttribs[11] = 8;
+   pi32ConfigAttribs[12] = EGL_GREEN_SIZE;
+   pi32ConfigAttribs[13] = 8;
+   pi32ConfigAttribs[14] = EGL_BLUE_SIZE;
+   pi32ConfigAttribs[15] = 8;
+   pi32ConfigAttribs[16] = EGL_ALPHA_SIZE;
+   pi32ConfigAttribs[17] = 8;
+   pi32ConfigAttribs[18] = EGL_DEPTH_SIZE;
+   pi32ConfigAttribs[19] = 8;
+   pi32ConfigAttribs[20] = EGL_LEVEL;
+   pi32ConfigAttribs[21] = 0;
+   pi32ConfigAttribs[22] = EGL_BUFFER_SIZE;
+   pi32ConfigAttribs[23] = 24;
+   pi32ConfigAttribs[24] = EGL_NONE;
+   */
+
    // Create new EGL context.
-   m_eglContext = eglCreateContext(m_eglDisplay, eglConfig, eglGlobalContext, NULL);
-   if (!m_eglContext)
-      return log_err("Failed to create new EGL context: %d.", eglGetError());
+//   m_eglContext = eglCreateContext(m_eglDisplay, eglConfig, eglGlobalContext, NULL);
+//   if (!m_eglContext)
+//      return log_err("Failed to create new EGL context: %hu.", eglGetError());
 
-   m_eglSurface = eglCreatePbufferSurface(m_eglDisplay, eglConfig, NULL);
-   if (m_eglSurface == EGL_NO_SURFACE)
-      return log_err("Failed to create pbuffer surface: %d.", eglGetError());
 
-   if (eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext) == EGL_FALSE)
-      return log_err("Failed to make current EGL ctx.");
+//   m_eglSurface = eglCreatePlatformWindowSurface(m_eglDisplay, eglConfig, NULL);
+//   if (m_eglSurface == EGL_NO_SURFACE)
+//      return log_err("Failed to create pbuffer surface: %hu.", eglGetError());
+
+//   if (eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext) == EGL_FALSE)
+//      return log_err("Failed to make current EGL ctx.");
 
    log_verbose("Creating a new OpenGL context in thread %p.", QThread::currentThreadId());
    m_oglContext = new QOpenGLContext();
@@ -340,7 +384,7 @@ bool OMX_EGLBufferProvider::instantiateTextures(const QSize& s)
 +-----------------------------------------------------------------------------*/
 inline OMX_TextureData* OMX_EGLBufferProvider::instantiateTexture(const QSize& size)
 {
-   EGLint attr[] = {EGL_GL_TEXTURE_LEVEL_KHR, 0, EGL_NONE};
+   EGLint attr[] = {EGL_GL_TEXTURE_LEVEL, 0, EGL_NONE};
 
    GLuint textureId;
 
@@ -360,11 +404,11 @@ inline OMX_TextureData* OMX_EGLBufferProvider::instantiateTexture(const QSize& s
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-   log_verbose("Creating EGLImageKHR...");
-   EGLImageKHR eglImage = eglCreateImageKHR(
+   log_verbose("Creating EGLImage...");
+   EGLImage eglImage = eglCreateImage(
             m_eglDisplay,
             m_eglContext,
-            EGL_GL_TEXTURE_2D_KHR,
+            EGL_GL_TEXTURE_2D,
             (EGLClientBuffer)textureId,
             attr
             );
@@ -372,7 +416,7 @@ inline OMX_TextureData* OMX_EGLBufferProvider::instantiateTexture(const QSize& s
 
    EGLint eglErr = eglGetError();
    if (eglErr != EGL_SUCCESS) {
-      LOG_ERROR(LOG_TAG, "Failed to create KHR image: %d.", eglErr);
+      LOG_ERROR(LOG_TAG, "Failed to create EGL image: %hu.", eglErr);
       return 0;
    }
 

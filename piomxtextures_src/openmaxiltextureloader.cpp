@@ -306,7 +306,7 @@ void OpenMAXILTextureLoader::doLoadTextureFromImage(
     assert(compEGLRender->GetPendingEmptyCount() == 0);
     assert(compEGLRender->GetPendingFillCount() == 0);
 
-    if (eglDestroyImageKHR(eglDisplay, eglImage) != EGL_TRUE)
+    if (eglDestroyImage(eglDisplay, eglImage) != EGL_TRUE)
         LOG_ERROR(LOG_TAG, "Failed to destroy EGL image.");
 
     file.close();
@@ -439,7 +439,7 @@ void OpenMAXILTextureLoader::onDecoderOutputChangedImage(
     LOG_VERBOSE(LOG_TAG, "%s\n", sLog);
     compEGLRender->waitForEvent(OMX_EventPortSettingsChanged, m_iOutPortRender, 0, TIMEOUT_MS);
 
-    // Grab output requirements again and provide a KHR image.
+    // Grab output requirements again and provide a EGL image.
     compEGLRender->GetParameter(OMX_IndexParamPortDefinition, &portdef);
     eglImage = getEGLImage(
                 portdef.format.video.nFrameWidth,
@@ -476,7 +476,7 @@ void OpenMAXILTextureLoader::onDecoderOutputChangedImage(
 |    OpenMAXILTextureLoader::getEGLImage
 +-----------------------------------------------------------------------------*/
 inline
-EGLImageKHR OpenMAXILTextureLoader::getEGLImage(
+EGLImage OpenMAXILTextureLoader::getEGLImage(
         OMX_U32 width,
         OMX_U32 height,
         EGLDisplay eglDisplay,
@@ -484,7 +484,7 @@ EGLImageKHR OpenMAXILTextureLoader::getEGLImage(
         GLuint& texture
         )
 {
-    EGLint attr[] = { EGL_GL_TEXTURE_LEVEL_KHR, 0, EGL_NONE};
+    EGLint attr[] = { EGL_GL_TEXTURE_LEVEL, 0, EGL_NONE};
 
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -497,10 +497,10 @@ EGLImageKHR OpenMAXILTextureLoader::getEGLImage(
     memset(pixel, 0x0f, sizeof(GLubyte)*width*height*4);  // to have a grey texture
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
 
-    EGLImageKHR eglImage = eglCreateImageKHR(
+    EGLImage eglImage = eglCreateImage(
                 eglDisplay,
                 eglContext,
-                EGL_GL_TEXTURE_2D_KHR,
+                EGL_GL_TEXTURE_2D,
                 (EGLClientBuffer)texture,
                 attr
                 );
@@ -508,10 +508,10 @@ EGLImageKHR OpenMAXILTextureLoader::getEGLImage(
     LOG_VERBOSE(LOG_TAG, "Client buffer: %x.", texture);
     EGLint eglErr = eglGetError();
     if(eglErr != EGL_SUCCESS) {
-        LOG_ERROR(LOG_TAG, "Failed to create KHR image: %d.", eglErr);
+        LOG_ERROR(LOG_TAG, "Failed to create EGL image: %d.", eglErr);
         return 0;
     }
 
-    LOG_VERBOSE(LOG_TAG, "Successfully created KHR image: %x.", (unsigned int)eglImage);
+    LOG_VERBOSE(LOG_TAG, "Successfully created EGL image: %x.", (unsigned int)eglImage);
     return eglImage;
 }

@@ -23,6 +23,8 @@
 
 QT += core core-private gui gui-private opengl quick quick-private multimedia
 
+CONFIG += link_pkgconfig
+
 DEFINES += POT_VERSION=\\\"5.7.1\\\"
 
 SRC=$$PWD
@@ -59,10 +61,10 @@ linux-rasp-pi4-g++|linux-rasp-pi4-v3d-g++ {
    FFMPEG_BUILD_DIR = ffmpeg_pi4
 }
 
-INCLUDEPATH += /opt/rpi/sysroot/opt/vc/include/
+INCLUDEPATH += /opt/rpi/sysroot/opt/il/include/
 LIBS += -L/opt/rpi/sysroot/opt/vc/lib/
 
-LIBS += -lopenmaxil -lEGL -lbcm_host -lvchiq_arm -lvcos -lGLESv2 -lrt -lv4l2
+LIBS += -lEGL -lGLESv2 -lopenmaxil -lbcm_host -lvchiq_arm -lvcos -lrt -lv4l2
 INCLUDEPATH += $$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/include
 #LIBS += -lavformat -lavcodec -lavutil
 # Internal
@@ -84,7 +86,6 @@ LIBS += -L$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib \
 # For omxplayer.
 #LIBS += -lfreetype -lWFC -lpcre
 #INCLUDEPATH += /usr/include/freetype2
-CONFIG += link_pkgconfig
 PKGCONFIG += freetype2
 
 # Flags used by hello_pi examples:

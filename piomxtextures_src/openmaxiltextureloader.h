@@ -31,7 +31,8 @@
 #include <QtCore/QWaitCondition>
 #include <QtCore/QMutex>
 
-#define EGL_EGLEXT_PROTOTYPES
+//#define EGL_EGLEXT_PROTOTYPES
+#include <gbm.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
@@ -87,7 +88,7 @@ private:
             );
     void onDecoderOutputChangedImage(EGLDisplay eglDisplay, EGLContext eglContext, GLuint& texture);
 
-    EGLImageKHR getEGLImage(
+    EGLImage getEGLImage(
             OMX_U32 width,
             OMX_U32 height,
             EGLDisplay eglDisplay,
@@ -105,7 +106,7 @@ private:
     OMXComponentShared compEGLRender;
     int m_iInPortRender, m_iOutPortRender;
     OMX_BUFFERHEADERTYPE* eglBuffer;
-    EGLImageKHR eglImage;
+    EGLImage eglImage;
 };
 
 #endif // OPENMAXILTEXTURELOADER_H

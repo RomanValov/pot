@@ -34,7 +34,8 @@
 #include <QSGTexture>
 #include <QSemaphore>
 
-#define EGL_EGLEXT_PROTOTYPES
+//#define EGL_EGLEXT_PROTOTYPES
+#include <gbm.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <IL/OMX_Core.h>
