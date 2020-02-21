@@ -281,7 +281,7 @@ bool OMX_EGLBufferProvider::init()
    if (!m_eglContext)
       return log_err("Failed to create new EGL context: %hu.", eglGetError());
 
-   m_eglSurface = eglCreatePlatformWindowSurface(m_eglDisplay, eglConfig, NULL);
+   m_eglSurface = eglCreatePbufferSurface(m_eglDisplay, eglConfig, NULL);
    if (m_eglSurface == EGL_NO_SURFACE)
       return log_err("Failed to create pbuffer surface: %hu.", eglGetError());
 
