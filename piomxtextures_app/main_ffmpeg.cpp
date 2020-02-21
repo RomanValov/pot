@@ -13,7 +13,7 @@ int main_ffmpeg(int argc, char** argv)
     AVCodecContext *c= NULL;
     int len;
     FILE *f, *outfile;
-    uint8_t inbuf[AUDIO_INBUF_SIZE + FF_INPUT_BUFFER_PADDING_SIZE];
+    uint8_t inbuf[AUDIO_INBUF_SIZE + AV_INPUT_BUFFER_PADDING_SIZE];
     AVPacket avpkt;
     AVFrame *decoded_frame = NULL;
 

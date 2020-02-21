@@ -41,47 +41,47 @@ INCLUDEPATH += \
    $$PWD/../3rdparty/LightLogger \
    $$PWD/../3rdparty/LightSmartPtr
 
-linux-rasp-pi-g++ {
-   message("Building for RPi1...");
-   FFMPEG_BUILD_DIR = ffmpeg_pi1
-}
+#linux-rasp-pi-g++ {
+#   message("Building for RPi1...");
+#   FFMPEG_BUILD_DIR = ffmpeg_pi1
+#}
 
-linux-rasp-pi2-g++ {
-   message("Building for RPi2...");
-   FFMPEG_BUILD_DIR = ffmpeg_pi2
-}
+#linux-rasp-pi2-g++ {
+#   message("Building for RPi2...");
+#   FFMPEG_BUILD_DIR = ffmpeg_pi2
+#}
 
-linux-rpi3-g++|linux-rasp-pi3-g++ {
-   message("Building for RPi3...");
-   FFMPEG_BUILD_DIR = ffmpeg_pi3
-}
+#linux-rpi3-g++|linux-rasp-pi3-g++ {
+#   message("Building for RPi3...");
+#   FFMPEG_BUILD_DIR = ffmpeg_pi3
+#}
 
-linux-rasp-pi4-g++|linux-rasp-pi4-v3d-g++ {
-   message("Building for RPi4...");
-   FFMPEG_BUILD_DIR = ffmpeg_pi4
-}
+#linux-rasp-pi4-g++|linux-rasp-pi4-v3d-g++ {
+#   message("Building for RPi4...");
+#   FFMPEG_BUILD_DIR = ffmpeg_pi4
+#}
 
 INCLUDEPATH += /opt/rpi/sysroot/opt/il/include/
 LIBS += -L/opt/rpi/sysroot/opt/vc/lib/
 
-LIBS += -lEGL -lGLESv2 -lopenmaxil -lbcm_host -lvchiq_arm -lvcos -lrt -lv4l2
-INCLUDEPATH += $$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/include
-#LIBS += -lavformat -lavcodec -lavutil
+LIBS += -lEGL -lGLESv2 -lopenmaxil -lbcm_host -lvchiq_arm -lvcos -lrt -lv4l2 -lz
+#INCLUDEPATH += $$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/include
+LIBS += -lmmal_core -lmmal_util -lmmal_vc_client -lvcsm -lavformat -lavcodec -lavutil -lswresample -lpcre
 # Internal
 #DEFINES += CONFIG_INCLUDE_FFMPEG
-contains(DEFINES, CONFIG_INCLUDE_FFMPEG) {
-LIBS += $$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib/libavformat.a \
-	$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib/libavcodec.a \
-	$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib/libavutil.a \
-	$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib/libswscale.a \
-	$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib/libswresample.a \
-   -lz -lssl -lcrypto -lbz2 -lpcre
-!contains(DEFINES, CONFIG_SKIP_SSH_SMB) { LIBS += -lsmbclient -lssh }
-}
-else {
-LIBS += -L$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib \
-   -lavformat -lavcodec -lavutil -lswscale -lswresample -lpcre
-}
+#contains(DEFINES, CONFIG_INCLUDE_FFMPEG) {
+#LIBS += $$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib/libavformat.a \
+#	$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib/libavcodec.a \
+#	$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib/libavutil.a \
+#	$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib/libswscale.a \
+#	$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib/libswresample.a \
+#   -lz -lssl -lcrypto -lbz2 -lpcre
+#!contains(DEFINES, CONFIG_SKIP_SSH_SMB) { LIBS += -lsmbclient -lssh }
+#}
+#else {
+#LIBS += -L$$PWD/../3rdparty/ffmpeg/$$FFMPEG_BUILD_DIR/lib \
+#   -lavformat -lavcodec -lavutil -lswscale -lswresample -lpcre
+#}
 
 # For omxplayer.
 #LIBS += -lfreetype -lWFC -lpcre

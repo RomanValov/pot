@@ -65,22 +65,22 @@ error("Either config as app or lib.");
 }
 
 # External
-LIBS += -lopenmaxil -lbrcmEGL -lbcm_host -lvchiq_arm -lvcos -lbrcmGLESv2 -lrt -lv4l2
-#LIBS += -lavformat -lavcodec -lavutil
+LIBS += -lEGL -lGLESv2 -lopenmaxil -lbcm_host -lvchiq_arm -lvcos -lrt -lv4l2 -lz
+LIBS += -lmmal_core -lmmal_util -lmmal_vc_client -lvcsm -lavformat -lavcodec -lavutil -lswresample -lpcre
 # Internal
-contains(DEFINES, CONFIG_INCLUDE_FFMPEG) {
-LIBS += $$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib/libavformat.a \
-   $$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib/libavcodec.a \
-   $$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib/libavutil.a \
-   $$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib/libswscale.a \
-   $$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib/libswresample.a \
-   -lz -lssl -lcrypto
-}
-else {
-LIBS += -L$$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib \
-   -lavformat -lavcodec -lavutil -lswscale -lswresample
-}
-INCLUDEPATH += $$_PRO_FILE_PWD_/3rdparty/ffmpeg/include
+#contains(DEFINES, CONFIG_INCLUDE_FFMPEG) {
+#LIBS += $$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib/libavformat.a \
+#   $$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib/libavcodec.a \
+#   $$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib/libavutil.a \
+#   $$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib/libswscale.a \
+#   $$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib/libswresample.a \
+#   -lz -lssl -lcrypto
+#}
+#else {
+#LIBS += -L$$_PRO_FILE_PWD_/3rdparty/ffmpeg/lib \
+#   -lavformat -lavcodec -lavutil -lswscale -lswresample
+#}
+#INCLUDEPATH += $$_PRO_FILE_PWD_/3rdparty/ffmpeg/include
 # Add this if building with old firmware.
 INCLUDEPATH += /opt/rpi/sysroot/opt/vc/include/interface/vmcs_host/linux
 # For omxplayer.
