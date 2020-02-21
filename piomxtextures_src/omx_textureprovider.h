@@ -276,58 +276,17 @@ bool OMX_EGLBufferProvider::init()
    if (!eglConfig)
       return log_err("Failed to get EGL config.");
 
-   if (eglGetConfigAttrib(m_eglDisplay, eglConfig, EGL_SURFACE_TYPE, &eglVal) == EGL_FALSE)
-      return log_err("Failed to get EGL config attrib.");
-
-   log_debug("Global EGL context config surface type: %hu.", eglVal);
-
-//   EGLint pi32ConfigAttribs[3];
-//   pi32ConfigAttribs[0] = EGL_SURFACE_TYPE;
-//   pi32ConfigAttribs[1] = EGL_PIXMAP_BIT;
-//   pi32ConfigAttribs[2] = EGL_RENDERABLE_TYPE;
-//   pi32ConfigAttribs[3] = EGL_OPENGL_ES2_BIT;
-//   pi32ConfigAttribs[4] = EGL_CONFORMANT;
-//   pi32ConfigAttribs[5] = EGL_OPENGL_ES2_BIT;
-//   pi32ConfigAttribs[6] = EGL_COLOR_BUFFER_TYPE;
-//   pi32ConfigAttribs[7] = EGL_RGB_BUFFER;
-//   pi32ConfigAttribs[2] = EGL_NONE;
-
-//   if (eglChooseConfig(m_eglDisplay, pi32ConfigAttribs, configs, MAX_CONFIG, &confCount) == EGL_FALSE)
-//      return log_err("Failed to choose surface configs: %hu.", eglGetError());
-//   log_verbose("Got configs %u.", confCount);
-
-   /*
-   pi32ConfigAttribs[8] = EGL_LUMINANCE_SIZE;
-   pi32ConfigAttribs[9] = 0;
-   pi32ConfigAttribs[10] = EGL_RED_SIZE;
-   pi32ConfigAttribs[11] = 8;
-   pi32ConfigAttribs[12] = EGL_GREEN_SIZE;
-   pi32ConfigAttribs[13] = 8;
-   pi32ConfigAttribs[14] = EGL_BLUE_SIZE;
-   pi32ConfigAttribs[15] = 8;
-   pi32ConfigAttribs[16] = EGL_ALPHA_SIZE;
-   pi32ConfigAttribs[17] = 8;
-   pi32ConfigAttribs[18] = EGL_DEPTH_SIZE;
-   pi32ConfigAttribs[19] = 8;
-   pi32ConfigAttribs[20] = EGL_LEVEL;
-   pi32ConfigAttribs[21] = 0;
-   pi32ConfigAttribs[22] = EGL_BUFFER_SIZE;
-   pi32ConfigAttribs[23] = 24;
-   pi32ConfigAttribs[24] = EGL_NONE;
-   */
-
    // Create new EGL context.
-//   m_eglContext = eglCreateContext(m_eglDisplay, eglConfig, eglGlobalContext, NULL);
-//   if (!m_eglContext)
-//      return log_err("Failed to create new EGL context: %hu.", eglGetError());
+   m_eglContext = eglCreateContext(m_eglDisplay, eglConfig, eglGlobalContext, NULL);
+   if (!m_eglContext)
+      return log_err("Failed to create new EGL context: %hu.", eglGetError());
 
+   m_eglSurface = eglCreatePlatformWindowSurface(m_eglDisplay, eglConfig, NULL);
+   if (m_eglSurface == EGL_NO_SURFACE)
+      return log_err("Failed to create pbuffer surface: %hu.", eglGetError());
 
-//   m_eglSurface = eglCreatePlatformWindowSurface(m_eglDisplay, eglConfig, NULL);
-//   if (m_eglSurface == EGL_NO_SURFACE)
-//      return log_err("Failed to create pbuffer surface: %hu.", eglGetError());
-
-//   if (eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext) == EGL_FALSE)
-//      return log_err("Failed to make current EGL ctx.");
+   if (eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext) == EGL_FALSE)
+      return log_err("Failed to make current EGL ctx.");
 
    log_verbose("Creating a new OpenGL context in thread %p.", QThread::currentThreadId());
    m_oglContext = new QOpenGLContext();
