@@ -716,9 +716,9 @@ OMX_ERRORTYPE COMXCoreComponent::AllocInputBuffers(bool use_buffers /* = false *
   m_input_buffer_count  = portFormat.nBufferCountActual;
   m_input_buffer_size   = portFormat.nBufferSize;
 
-  CLog::Log(LOGDEBUG, "COMXCoreComponent::AllocInputBuffers component(%s) - port(%d), nBufferCountMin(%u), nBufferCountActual(%u), nBufferSize(%u), nBufferAlignmen(%u)\n",
+  CLog::Log(LOGDEBUG, "COMXCoreComponent::AllocInputBuffers component(%s) - port(%d), nBufferCountMin(%u), nBufferCountActual(%u), nBufferSize(%u), nBufferAlignment(%u), use_buffers(%i)\n",
             m_componentName.c_str(), GetInputPort(), portFormat.nBufferCountMin,
-            portFormat.nBufferCountActual, portFormat.nBufferSize, portFormat.nBufferAlignment);
+            portFormat.nBufferCountActual, portFormat.nBufferSize, portFormat.nBufferAlignment, use_buffers);
 
   for (size_t i = 0; i < portFormat.nBufferCountActual; i++)
   {
@@ -797,9 +797,9 @@ OMX_ERRORTYPE COMXCoreComponent::AllocOutputBuffers(bool use_buffers /* = false 
   m_output_buffer_count  = portFormat.nBufferCountActual;
   m_output_buffer_size   = portFormat.nBufferSize;
 
-  CLog::Log(LOGDEBUG, "COMXCoreComponent::AllocOutputBuffers component(%s) - port(%d), nBufferCountMin(%u), nBufferCountActual(%u), nBufferSize(%u) nBufferAlignmen(%u)\n",
+  CLog::Log(LOGDEBUG, "COMXCoreComponent::AllocOutputBuffers component(%s) - port(%d), nBufferCountMin(%u), nBufferCountActual(%u), nBufferSize(%u) nBufferAlignment(%u), use_buffers(%i)\n",
             m_componentName.c_str(), m_output_port, portFormat.nBufferCountMin,
-            portFormat.nBufferCountActual, portFormat.nBufferSize, portFormat.nBufferAlignment);
+            portFormat.nBufferCountActual, portFormat.nBufferSize, portFormat.nBufferAlignment, use_buffers);
 
   for (size_t i = 0; i < portFormat.nBufferCountActual; i++)
   {
@@ -1565,6 +1565,21 @@ bool COMXCoreComponent::Initialize( const std::string &component_name, OMX_INDEX
     {
       CLog::Log(LOGERROR, "COMXCoreComponent::Initialize - could not get component handle for %s omx_err(0x%08x)\n",
           component_name.c_str(), (int)omx_err);
+
+/*
+      char buffer[128];
+      for (OMX_U32 index = 0;; index++) {
+        omx_err = m_DllOMX->OMX_ComponentNameEnum(buffer, 128, index);
+        if (omx_err == OMX_ErrorNone) {
+          CLog::Log(LOGERROR, "\t\t%s\n", buffer);
+        } else {
+          CLog::Log(LOGERROR, "COMXCoreComponent::Initialize - OMX_ComponentNameEnum %u (0x%08x)\n",
+              (int)index, (int)omx_err);
+          break;
+        }
+      }
+*/
+
       Deinitialize();
       return false;
     }

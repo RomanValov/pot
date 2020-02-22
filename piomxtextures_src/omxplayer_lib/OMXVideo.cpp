@@ -216,7 +216,11 @@ bool COMXVideo::PortSettingsChanged()
   if (m_settings_changed)
   {
     PortSettingsChangedLogger(port_image, -1);
+#ifdef USE_EGL_RENDER
     SetVideoEGL();
+#else
+    SetVideoRect();
+#endif
     m_omx_decoder.EnablePort(m_omx_decoder.GetOutputPort(), true);
     return true;
   }
@@ -233,7 +237,7 @@ bool COMXVideo::PortSettingsChanged()
   else
     m_deinterlace = interlace.eMode != OMX_InterlaceProgressive;
 
-  if(!m_omx_render.Initialize("OMX.broadcom.egl_render", OMX_IndexParamVideoInit))
+  if(!m_omx_render.Initialize("OMX.broadcom.video_render", OMX_IndexParamVideoInit))
     return false;
 
   m_omx_render.ResetEos();
@@ -249,7 +253,7 @@ bool COMXVideo::PortSettingsChanged()
       return false;
   }
 
-#if 0
+#ifndef USE_EGL_RENDER
   // lcarlon: this is not valid for egl_render.
   OMX_CONFIG_DISPLAYREGIONTYPE configDisplay;
   OMX_INIT_STRUCTURE(configDisplay);
@@ -268,7 +272,11 @@ bool COMXVideo::PortSettingsChanged()
   }
 #endif
 
+#ifdef USE_EGL_RENDER
   SetVideoEGL();
+#else
+  SetVideoRect();
+#endif
 
   if(m_config.hdmi_clock_sync)
   {
@@ -397,7 +405,9 @@ bool COMXVideo::PortSettingsChanged()
     return false;
   }
 
+#ifdef USE_EGL_RENDER
   SetVideoEGLOutputPort();
+#endif
 
   omx_err = m_omx_render.SetStateForComponent(OMX_StateExecuting);
   if(omx_err != OMX_ErrorNone)
@@ -408,12 +418,14 @@ bool COMXVideo::PortSettingsChanged()
 
   m_settings_changed = true;
 
+#ifdef USE_EGL_RENDER
   OMX_TextureData* data = m_provider->getNextEmptyBuffer();
   assert(data);
 
   if ((omx_err = OMX_FillThisBuffer(m_omx_render.GetComponent(), data->m_omxBuffer)) != OMX_ErrorNone) {
      LOG_ERROR(LOG_TAG, "Error: %x.", (unsigned int)omx_err);
   }
+#endif
 
   return true;
 }
@@ -429,10 +441,6 @@ bool COMXVideo::Open(OMXClock *clock, const OMXVideoConfig &config)
   m_setStartTime = true;
 
   m_config = config;
-  // lcarlon: unused when using egl_render.
-#if 0
-  m_src_rect.SetRect(0, 0, 0, 0);
-#endif
 
   m_video_codec_name      = "";
   m_codingType            = OMX_VIDEO_CodingUnused;
@@ -1028,7 +1036,7 @@ bool COMXVideo::SetVideoEGLOutputPort()
    QList<OMX_TextureData*> datas = m_provider->getBuffers();
    log_verbose("Creating buffers for %d images.", datas.size());
    foreach (OMX_TextureData* data, datas) {
-		omx_err = OMX_UseEGLImage(m_omx_render.GetComponent(), &(data->m_omxBuffer), 221, this, data->m_eglImage);
+      omx_err = OMX_UseEGLImage(m_omx_render.GetComponent(), &(data->m_omxBuffer), 221, this, data->m_eglImage);
       if (omx_err != OMX_ErrorNone) {
          CLog::Log(LOGERROR, "OpenMAXILTextureLoader::decode - OMX_UseEGLImage - failed with omxErr(0x%x)\n", omx_err);
          return false;

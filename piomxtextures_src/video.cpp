@@ -119,7 +119,7 @@ int video_decode_test(QString qfilename, EGLImage eglImageVideo, EGLDisplay eglD
 
     // Create the components.
     LOG_DEBUG(LOG_TAG, "Getting components.");
-    MyEGLRendererShared compEGLRender = OMXComponentFactory<MyEGLRenderer>::getInstance("OMX.broadcom.egl_render");
+    MyEGLRendererShared compEGLRender = OMXComponentFactory<MyEGLRenderer>::getInstance("OMX.broadcom.video_render");
     OMXComponentShared compDecoder    = OMXComponentFactory<OMXComponent>::getInstance("OMX.broadcom.video_decode");
     OMXComponentShared compClock      = OMXComponentFactory<OMXComponent>::getInstance("OMX.broadcom.clock");
     OMXComponentShared compScheduler  = OMXComponentFactory<OMXComponent>::getInstance("OMX.broadcom.video_scheduler");
@@ -433,7 +433,7 @@ int video_decode_test(QString qfilename, EGLImage eglImageVideo, EGLDisplay eglD
     list[0] = video_decode;
 
     // create video_render
-    if(status == 0 && ilclient_create_component(client, &video_render, "egl_render", (ILCLIENT_CREATE_FLAGS_T)(ILCLIENT_ENABLE_OUTPUT_BUFFERS | ILCLIENT_DISABLE_ALL_PORTS)) != 0)
+    if(status == 0 && ilclient_create_component(client, &video_render, "video_render", (ILCLIENT_CREATE_FLAGS_T)(ILCLIENT_ENABLE_OUTPUT_BUFFERS | ILCLIENT_DISABLE_ALL_PORTS)) != 0)
         status = -14;
     list[1] = video_render;
 

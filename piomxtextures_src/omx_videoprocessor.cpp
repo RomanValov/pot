@@ -257,7 +257,7 @@ void OMX_VideoProcessor::doVideoDecoding()
 
     // Create the components.
     MyEGLRendererShared compEGLRender = OMXComponentFactory<MyEGLRenderer>::getInstance(
-                "OMX.broadcom.egl_render"
+                "OMX.broadcom.video_render"
                 );
     OMXComponentShared compDecoder    = OMXComponentFactory<OMXComponent>::getInstance(
                 "OMX.broadcom.video_decode"

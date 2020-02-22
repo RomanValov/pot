@@ -54,7 +54,7 @@ OMX_VideoGraph::OMX_VideoGraph(
     // Create the components.
     LOG_VERBOSE(LOG_TAG, "Instantiating components...");
     compEGLRender = OMXComponentFactory<MyEGLRenderer>::getInstance(
-                "OMX.broadcom.egl_render"
+                "OMX.broadcom.video_render"
                 );
     compDecoder = OMXComponentFactory<OMXComponent>::getInstance(
                 "OMX.broadcom.video_decode"

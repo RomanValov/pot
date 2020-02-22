@@ -135,7 +135,7 @@ void OpenMAXILTextureLoader::doLoadTextureFromImage(
 
     // Get components.
     compImageDecoder = OMXComponentFactory<OMXComponent>::getInstance("OMX.broadcom.image_decode");
-    compEGLRender    = OMXComponentFactory<OMXComponent>::getInstance("OMX.broadcom.egl_render");
+    compEGLRender    = OMXComponentFactory<OMXComponent>::getInstance("OMX.broadcom.video_render");
 
     // Check the number of ports is correct.
     OMX_PORT_PARAM_TYPE port;
