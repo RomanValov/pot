@@ -281,11 +281,7 @@ bool OMX_EGLBufferProvider::init()
    if (!m_eglContext)
       return log_err("Failed to create new EGL context: %hu.", eglGetError());
 
-   m_eglSurface = eglCreatePbufferSurface(m_eglDisplay, eglConfig, NULL);
-   if (m_eglSurface == EGL_NO_SURFACE)
-      return log_err("Failed to create pbuffer surface: %hu.", eglGetError());
-
-   if (eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext) == EGL_FALSE)
+   if (eglMakeCurrent(m_eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, m_eglContext) == EGL_FALSE)
       return log_err("Failed to make current EGL ctx.");
 
    log_verbose("Creating a new OpenGL context in thread %p.", QThread::currentThreadId());
