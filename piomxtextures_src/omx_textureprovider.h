@@ -87,13 +87,13 @@ public:
 +-----------------------------------------------------------------------------*/
 class OMX_EGLBufferProvider : public QObject
 {
-	Q_OBJECT
+   Q_OBJECT
 public:
    OMX_EGLBufferProvider() :
       QObject()
-	 , m_semEmpty(TEXTURE_COUNT)
-	 , m_currentDecoder(NULL)
-	 , m_currentRenderer(NULL)
+    , m_semEmpty(TEXTURE_COUNT)
+    , m_currentDecoder(NULL)
+    , m_currentRenderer(NULL)
     , m_mutex(QMutex::Recursive)
     , m_initialized(false)
     , m_threadId(0)
@@ -103,75 +103,75 @@ public:
     , m_eglDisplay(NULL)
    {}
 
-	~OMX_EGLBufferProvider();
+   ~OMX_EGLBufferProvider();
 
    bool init();
    bool instantiateTextures(const QSize& s);
    OMX_TextureData* instantiateTexture(const QSize& size);
-	bool textureInstantiated();
+   bool textureInstantiated();
 
    OMX_TextureData* getNextEmptyBuffer();
-	GLuint getNextTexture();
+   GLuint getNextTexture();
 
-	bool registerFilledBuffer(OMX_BUFFERHEADERTYPE* buffer);
+   bool registerFilledBuffer(OMX_BUFFERHEADERTYPE* buffer);
 
    QList<OMX_TextureData*> getBuffers() {
-		QMutexLocker locker(&m_mutex);
+      QMutexLocker locker(&m_mutex);
       return m_available;
    }
 
    int getBufferCount() {
-		QMutexLocker locker(&m_mutex);
+      QMutexLocker locker(&m_mutex);
       return m_available.size();
    }
 
-	void flush() {
-		QMutexLocker locker(&m_mutex);
+   void flush() {
+      QMutexLocker locker(&m_mutex);
 
 #if 0
-		foreach (OMX_TextureData* data, m_filledQueue)
-			m_emptyQueue.push_back(data);
-		if (m_currentDecoder)
-			m_emptyQueue.push_back(m_currentDecoder);
-		if (m_currentRenderer)
-			m_emptyQueue.push_back(m_currentRenderer);
+      foreach (OMX_TextureData* data, m_filledQueue)
+         m_emptyQueue.push_back(data);
+      if (m_currentDecoder)
+         m_emptyQueue.push_back(m_currentDecoder);
+      if (m_currentRenderer)
+         m_emptyQueue.push_back(m_currentRenderer);
 
-		m_filledQueue.clear();
-		m_currentDecoder = NULL;
+      m_filledQueue.clear();
+      m_currentDecoder = NULL;
 
-		assert(m_emptyQueue.size() == m_available.size());
+      assert(m_emptyQueue.size() == m_available.size());
 #endif
 
-		m_emptyQueue.clear();
-		m_filledQueue.clear();
-		m_currentDecoder = NULL;
+      m_emptyQueue.clear();
+      m_filledQueue.clear();
+      m_currentDecoder = NULL;
 
-		// Leave the current texture in the renderer.
-		//m_currentRenderer = NULL;
+      // Leave the current texture in the renderer.
+      //m_currentRenderer = NULL;
 
-		m_emptyQueue.append(m_available);
-		m_emptyQueue.removeAll(m_currentRenderer);
+      m_emptyQueue.append(m_available);
+      m_emptyQueue.removeAll(m_currentRenderer);
 
-		int t = m_currentRenderer ? 1 : 0;
-		m_semEmpty.release(TEXTURE_COUNT - m_semEmpty.available() - t);
-	}
+      int t = m_currentRenderer ? 1 : 0;
+      m_semEmpty.release(TEXTURE_COUNT - m_semEmpty.available() - t);
+   }
 
 public slots:
-	void free();
+   void free();
    void deinit();
 
 signals:
-	void texturesReady();
-	void texturesFreed();
-	void frameReady();
+   void texturesReady();
+   void texturesFreed();
+   void frameReady();
 
 private:
    QQueue<OMX_TextureData*> m_filledQueue;
    QQueue<OMX_TextureData*> m_emptyQueue;
    QSemaphore m_semEmpty;
    QList<OMX_TextureData*> m_available;
-	OMX_TextureData* m_currentDecoder;
-	OMX_TextureData* m_currentRenderer;
+   OMX_TextureData* m_currentDecoder;
+   OMX_TextureData* m_currentRenderer;
    QMutex m_mutex;
    bool m_initialized;
    Qt::HANDLE m_threadId;
@@ -190,12 +190,12 @@ typedef std::shared_ptr<OMX_EGLBufferProvider> OMX_EGLBufferProviderSh;
 +-----------------------------------------------------------------------------*/
 inline OMX_EGLBufferProvider::~OMX_EGLBufferProvider()
 {
-	log_dtor_func;
+   log_dtor_func;
 
-	QMutexLocker locker(&m_mutex);
-	if (m_filledQueue.size() > 0)
+   QMutexLocker locker(&m_mutex);
+   if (m_filledQueue.size() > 0)
       log_err("Leaking data in GPU: m_filledQueue size is %d.", m_filledQueue.size());
-	if (m_emptyQueue.size() > 0)
+   if (m_emptyQueue.size() > 0)
       log_err("Leaking data in GPU: m_emptyQueue size is %d.", m_emptyQueue.size());
 
    if (m_initialized)
@@ -241,10 +241,10 @@ bool OMX_EGLBufferProvider::init()
 
    log_info("Initializing buffer provider...");
    QOpenGLContext* sharedOglContext = QOpenGLContext::globalShareContext();
-	if (!sharedOglContext) {
-		log_err("Failed to get shared OGL context. Please enable it with the proper attr.");
-		abort();
-	}
+   if (!sharedOglContext) {
+      log_err("Failed to get shared OGL context. Please enable it with the proper attr.");
+      abort();
+   }
 
    EGLContext eglGlobalContext = get_global_egl_context();
    if (!eglGlobalContext) {
@@ -298,27 +298,27 @@ bool OMX_EGLBufferProvider::init()
 inline
 bool OMX_EGLBufferProvider::instantiateTextures(const QSize& s)
 {
-	QMutexLocker locker(&m_mutex);
-	if (!m_available.isEmpty()) {
-		if (m_available.at(0)->m_textureSize == s) {
-			flush();
-			return log_verbose("Reusing allocated textures.");
-		}
-	}
+   QMutexLocker locker(&m_mutex);
+   if (!m_available.isEmpty()) {
+      if (m_available.at(0)->m_textureSize == s) {
+         flush();
+         return log_verbose("Reusing allocated textures.");
+      }
+   }
 
-	// Free all textures.
-	free();
+   // Free all textures.
+   free();
 
 #if 0
-	if (UNLIKELY(m_texCount != 0)) {
-		log_warn("There are currently %d textures available already.", m_texCount);
-		return false;
-	}
+   if (UNLIKELY(m_texCount != 0)) {
+      log_warn("There are currently %d textures available already.", m_texCount);
+      return false;
+   }
 
-	if (UNLIKELY(count <= 0)) {
-		log_warn("It makes no sense to instantiate <= 0 textures.");
-		return false;
-	}
+   if (UNLIKELY(count <= 0)) {
+      log_warn("It makes no sense to instantiate <= 0 textures.");
+      return false;
+   }
 #endif
 
    m_semEmpty.release(TEXTURE_COUNT - m_semEmpty.available());
@@ -327,9 +327,9 @@ bool OMX_EGLBufferProvider::instantiateTextures(const QSize& s)
       OMX_TextureData* tex = instantiateTexture(s);
       m_emptyQueue.append(tex);
       m_available.append(tex);
-	}
+   }
 
-	emit texturesReady();
+   emit texturesReady();
 
    return true;
 }
@@ -391,23 +391,23 @@ inline OMX_TextureData* OMX_EGLBufferProvider::instantiateTexture(const QSize& s
 inline
 GLuint OMX_EGLBufferProvider::getNextTexture()
 {
-	QMutexLocker locker(&m_mutex);
+   QMutexLocker locker(&m_mutex);
 
-	OMX_TextureData* data;
-	if (LIKELY(!m_filledQueue.empty()))
-		data = m_filledQueue.dequeue();
-	else {
-		if (LIKELY(m_currentRenderer != NULL)) {
-			log_disabled("No decoded frame to show. Showing the same twice.");
-			return m_currentRenderer->m_textureId;
-		}
+   OMX_TextureData* data;
+   if (LIKELY(!m_filledQueue.empty()))
+      data = m_filledQueue.dequeue();
+   else {
+      if (LIKELY(m_currentRenderer != NULL)) {
+         log_disabled("No decoded frame to show. Showing the same twice.");
+         return m_currentRenderer->m_textureId;
+      }
 
       log_warn("No decoded frame to show at all. Let's render black.");
-		return 0;
-	}
+      return 0;
+   }
 
    if (LIKELY(m_currentRenderer != NULL)) {
-		m_emptyQueue.enqueue(m_currentRenderer);
+      m_emptyQueue.enqueue(m_currentRenderer);
 
       m_semEmpty.release();
 #ifdef DEBUG_TEXTURE_PROVIDER
@@ -415,9 +415,9 @@ GLuint OMX_EGLBufferProvider::getNextTexture()
 #endif
    }
 
-	m_currentRenderer = data;
+   m_currentRenderer = data;
 
-	return data->m_textureId;
+   return data->m_textureId;
 }
 
 /*------------------------------------------------------------------------------
@@ -426,16 +426,16 @@ GLuint OMX_EGLBufferProvider::getNextTexture()
 inline
 bool OMX_EGLBufferProvider::registerFilledBuffer(OMX_BUFFERHEADERTYPE* buffer)
 {
-	QMutexLocker locker(&m_mutex);
-	if (UNLIKELY(m_currentDecoder == NULL))
-		return true;
+   QMutexLocker locker(&m_mutex);
+   if (UNLIKELY(m_currentDecoder == NULL))
+      return true;
 
-	m_filledQueue.enqueue(m_currentDecoder);
-	m_currentDecoder = NULL;
+   m_filledQueue.enqueue(m_currentDecoder);
+   m_currentDecoder = NULL;
 
    emit frameReady();
 
-	return true;
+   return true;
 }
 
 /*------------------------------------------------------------------------------
@@ -452,14 +452,14 @@ OMX_TextureData* OMX_EGLBufferProvider::getNextEmptyBuffer()
    log_debug("Acquired sem: %d.", m_semEmpty.available());
 #endif
 
-	QMutexLocker locker(&m_mutex);
+   QMutexLocker locker(&m_mutex);
 
    if (LIKELY(found))
-		return (m_currentDecoder = m_emptyQueue.dequeue());
-	if (LIKELY(!m_filledQueue.empty())) {
-		log_warn("One frame couldn't be shown.");
-		return (m_currentDecoder = m_filledQueue.dequeue());
-	}
+      return (m_currentDecoder = m_emptyQueue.dequeue());
+   if (LIKELY(!m_filledQueue.empty())) {
+      log_warn("One frame couldn't be shown.");
+      return (m_currentDecoder = m_filledQueue.dequeue());
+   }
 
    // We should never come to this.
    log_warn("No buffer available in any queue.");
@@ -471,7 +471,7 @@ OMX_TextureData* OMX_EGLBufferProvider::getNextEmptyBuffer()
 +-----------------------------------------------------------------------------*/
 inline void OMX_EGLBufferProvider::free()
 {
-	QMutexLocker locker(&m_mutex);
+   QMutexLocker locker(&m_mutex);
 
    if (eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext) == EGL_FALSE) {
       log_err("Failed to make current EGL ctx.");
@@ -479,21 +479,21 @@ inline void OMX_EGLBufferProvider::free()
    }
 
    log_info("Freeing textures in thread: %p.", QThread::currentThreadId());
-	foreach (OMX_TextureData* data, m_available)
-		data->freeData();
+   foreach (OMX_TextureData* data, m_available)
+      data->freeData();
 
-	m_currentDecoder = NULL;
-	m_currentRenderer = NULL;
+   m_currentDecoder = NULL;
+   m_currentRenderer = NULL;
 
-	m_semEmpty.release(TEXTURE_COUNT - m_semEmpty.available());
+   m_semEmpty.release(TEXTURE_COUNT - m_semEmpty.available());
 
-	// qDeleteAll only calls delete, does not remove the object from
-	// the container.
-	qDeleteAll(m_available);
+   // qDeleteAll only calls delete, does not remove the object from
+   // the container.
+   qDeleteAll(m_available);
 
-	m_filledQueue.clear();
-	m_emptyQueue.clear();
-	m_available.clear();
+   m_filledQueue.clear();
+   m_emptyQueue.clear();
+   m_available.clear();
 
    emit texturesFreed();
 }

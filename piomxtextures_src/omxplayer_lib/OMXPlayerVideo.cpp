@@ -218,7 +218,7 @@ bool OMXPlayerVideo::Decode(OMXPacket *pkt)
     if(m_flush_requested) return true;
   }
 
-  CLog::Log(LOGINFO, "CDVDPlayerVideo::Decode dts:%.0f pts:%.0f cur:%.0f, size:%d", pkt->dts, pkt->pts, m_iCurrentPts, pkt->size);
+  CLog::Log(LOGDEBUG, "CDVDPlayerVideo::Decode dts:%.0f pts:%.0f cur:%.0f, size:%d", pkt->dts, pkt->pts, m_iCurrentPts, pkt->size);
   m_decoder->Decode(pkt->data, pkt->size, dts, pts);
   return true;
 }

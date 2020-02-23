@@ -124,8 +124,8 @@ public:
   void SetVideoRect(int aspectMode);
   void SetVideoRect();
   void SetAlpha(int alpha);
-  bool SetVideoEGL();
-  bool SetVideoEGLOutputPort();
+  bool SetVideoBuf();
+  bool SetVideoBufOutputPort();
   int GetInputBufferSize();
   void SubmitEOS();
   bool IsEOS();

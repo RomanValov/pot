@@ -27,8 +27,8 @@
 +-----------------------------------------------------------------------------*/
 #include <QString>
 
-#define BUILD_LOG_LEVEL_DEBUG
-#define ENABLE_CODE_LOCATION
+#define BUILD_LOG_LEVEL_INFORMATION
+//#define ENABLE_CODE_LOCATION
 #include <lc_logging.h>
 
 using namespace std;

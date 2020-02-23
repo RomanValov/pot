@@ -1685,6 +1685,8 @@ OMX_ERRORTYPE COMXCoreComponent::DecoderEventHandlerCallback(
     return OMX_ErrorNone;
 
   COMXCoreComponent *ctx = static_cast<COMXCoreComponent*>(pAppData);
+  CLog::Log(LOGNOTICE, "Event Handle: %s\n", ctx->GetName().c_str());
+
   return ctx->DecoderEventHandler(hComponent, eEvent, nData1, nData2, pEventData);
 }
 
@@ -1698,6 +1700,7 @@ OMX_ERRORTYPE COMXCoreComponent::DecoderEmptyBufferDoneCallback(
     return OMX_ErrorNone;
 
   COMXCoreComponent *ctx = static_cast<COMXCoreComponent*>(pAppData);
+  CLog::Log(LOGNOTICE, "Empty Buffer: %s\n", ctx->GetName().c_str());
 
   // lcarlon: keep during merges.
   if(ctx->CustomDecoderEmptyBufferDoneHandler){
@@ -1718,6 +1721,7 @@ OMX_ERRORTYPE COMXCoreComponent::DecoderFillBufferDoneCallback(
     return OMX_ErrorNone;
 
   COMXCoreComponent *ctx = static_cast<COMXCoreComponent*>(pAppData);
+  CLog::Log(LOGWARNING, "Fill Buffer: %s\n", ctx->GetName().c_str());
 
   // lcarlon: keep during merges.
   if(ctx->CustomDecoderFillBufferDoneHandler){
